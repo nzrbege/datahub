@@ -198,6 +198,14 @@
             font-size: 13px; color: #475569; cursor: pointer;
         }
         .checkbox-row input { accent-color: #1d6fa6; width: 15px; height: 15px; cursor: pointer; }
+        .login-options {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .forgot-link {
+            font-size: 12.5px; font-weight: 700; color: #1d6fa6; text-decoration: none;
+        }
+        .forgot-link:hover { color: #163357; text-decoration: underline; }
 
         .login-footer {
             margin-top: 28px; text-align: center;
@@ -290,10 +298,11 @@
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 20px;">
+            <div class="login-options">
                 <label class="checkbox-row">
                     <input type="checkbox" name="remember"> Ingat saya selama 30 hari
                 </label>
+                <a href="{{ route('password.request') }}" class="forgot-link">Lupa password?</a>
             </div>
 
             <button type="submit" class="btn-login">

@@ -32,6 +32,7 @@ class PersonalDataAudit extends Model
         'user_deactivate'   => 'Mengubah status akun',
         'password_change'   => 'Mengubah password sendiri',
         'password_reset'    => 'Mereset kata sandi',
+        'password_forgot_request' => 'Mengajukan lupa password',
     ];
 
     private const ACTION_DESCRIPTIONS = [
@@ -58,6 +59,7 @@ class PersonalDataAudit extends Model
         'user_deactivate'   => 'Akun pengguna diaktifkan atau dinonaktifkan.',
         'password_change'   => 'Pengguna mengganti password akunnya sendiri.',
         'password_reset'    => 'Kata sandi pengguna diganti oleh Super Admin.',
+        'password_forgot_request' => 'Pengguna mengirim permintaan bantuan lupa password.',
     ];
 
     private const RESOURCE_LABELS = [
@@ -167,6 +169,7 @@ class PersonalDataAudit extends Model
             'user_deactivate' => $this->statusSummary($context),
             'password_change' => 'Password akun sendiri berhasil diperbarui.',
             'password_reset' => 'Password akun direset oleh Super Admin.',
+            'password_forgot_request' => 'Permintaan bantuan lupa password dicatat.',
             default => $this->fallbackSummary($context),
         };
     }

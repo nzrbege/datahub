@@ -21,6 +21,11 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    public function showForgotPassword()
+    {
+        return view('auth.forgot-password');
+    }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -101,6 +106,38 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'identifier' => ['required', 'string', 'max:255'],
+        ], [
+            'identifier.required' => 'Masukkan username atau email akun.',
+        ]);
+
+        $identifier = trim($validated['identifier']);
+        $key = 'forgot-password:' . sha1(strtolower($identifier) . '|' . $request->ip());
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            throw ValidationException::withMessages([
+                'identifier' => "Terlalu banyak percobaan. Coba lagi dalam {$seconds} detik.",
+            ]);
+        }
+
+        RateLimiter::hit($key, 60);
+
+        $user = User::where('username', $identifier)
+            ->orWhere('email', $identifier)
+            ->first();
+
+        $this->audit->log('password_forgot_request', $user, [
+            'identifier' => $identifier,
+            'account_found' => (bool) $user,
+        ]);
+
+        return back()->with('success', 'Permintaan lupa password sudah dicatat. Silakan hubungi Super Admin untuk verifikasi dan reset password.');
     }
 
     public function showPasswordForm()
