@@ -10,7 +10,7 @@
 
 <div class="pdp-notice">
     <i class="fas fa-shield-halved"></i>
-    <div><strong>UU PDP Pasal 35 - Keamanan Data:</strong> Pastikan file sudah diberi token/password sebelum diunggah. Sistem menyimpan file di storage privat, membatasi akses OPD, dan mencatat hash SHA-256 untuk verifikasi integritas.</div>
+    <div><strong>UU PDP Pasal 35 - Keamanan Data:</strong> Pastikan file sudah diberi token/password sebelum diunggah. Sistem menyimpan file di storage privat dan membatasi akses OPD sesuai izin yang diberikan.</div>
 </div>
 
 <form action="{{ route('superadmin.files.store') }}" method="POST" enctype="multipart/form-data">
