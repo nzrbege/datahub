@@ -77,7 +77,7 @@
                             <div class="dataset-meta">
                                 <span class="dataset-meta-chip"><i class="fas fa-calendar" style="font-size:10px"></i> {{ $file->tahun_data ?? '—' }}</span>
                                 <span class="dataset-meta-chip"><i class="fas fa-weight-hanging" style="font-size:10px"></i> {{ $file->file_size_human }}</span>
-                                <span class="dataset-meta-chip"><i class="fas fa-lock" style="font-size:10px; color:var(--success)"></i> Terenkripsi</span>
+                                <span class="dataset-meta-chip"><i class="fas fa-shield-halved" style="font-size:10px; color:var(--success)"></i> Storage Privat</span>
                             </div>
                             <div class="dataset-desc">
                                 {{ \Illuminate\Support\Str::limit($file->deskripsi ?: 'Dataset tersedia untuk diajukan melalui permintaan resmi dengan melampirkan NDA.', 110) }}

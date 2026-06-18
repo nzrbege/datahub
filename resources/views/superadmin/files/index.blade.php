@@ -37,7 +37,7 @@
                             <div>
                                 <div style="font-weight:700;font-size:13px;">{{ $file->judul }}</div>
                                 <div style="font-size:11px;color:var(--text-ghost);font-family:'JetBrains Mono',monospace;margin-top:2px;">
-                                    <i class="fas fa-lock" style="color:var(--success);font-size:9px;"></i> {{ $file->original_filename }}
+                                    <i class="fas fa-shield-halved" style="color:var(--success);font-size:9px;"></i> {{ $file->original_filename }}
                                 </div>
                             </div>
                         </div>
@@ -103,6 +103,6 @@
 
 <div class="pdp-notice">
     <i class="fas fa-shield-halved"></i>
-    <div><strong>Keamanan Penyimpanan:</strong> Semua file tersimpan dalam format terenkripsi AES-256 di storage privat dan tidak dapat diakses langsung via URL. Setiap akses dan unduhan tercatat dalam audit log sesuai UU PDP Pasal 47.</div>
+    <div><strong>Keamanan Penyimpanan:</strong> Semua file tersimpan di storage privat dan tidak dapat diakses langsung via URL. Pastikan file sudah diberi token/password sebelum upload. Setiap akses dan unduhan tercatat dalam audit log sesuai UU PDP Pasal 47.</div>
 </div>
 @endsection

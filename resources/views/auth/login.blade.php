@@ -232,7 +232,7 @@
         <div class="login-features">
             <div class="feature-item">
                 <div class="feature-icon"><i class="fas fa-lock"></i></div>
-                File dataset disimpan secara terenkripsi
+                File dataset disimpan di storage privat
             </div>
             <div class="feature-item">
                 <div class="feature-icon"><i class="fas fa-clipboard-list"></i></div>

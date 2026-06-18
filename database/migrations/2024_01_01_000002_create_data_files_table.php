@@ -14,12 +14,12 @@ return new class extends Migration
             $table->string('judul');
             $table->text('deskripsi')->nullable();
             $table->string('original_filename');
-            $table->string('stored_filename'); // nama file terenkripsi di storage
+            $table->string('stored_filename'); // nama file di storage private
             $table->string('file_path');
             $table->string('file_type'); // xlsx, csv, zip
             $table->bigInteger('file_size'); // bytes
             $table->string('file_hash'); // SHA-256 untuk integritas
-            $table->boolean('is_encrypted')->default(true);
+            $table->boolean('is_encrypted')->default(false);
             $table->string('kategori')->nullable()->comment('Kategori data: KK, KTP, dll');
             $table->integer('jumlah_record')->nullable();
             $table->string('wilayah')->nullable();

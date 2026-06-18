@@ -10,7 +10,7 @@ return [
             'throw'  => false,
         ],
 
-        // Disk private untuk file data terenkripsi
+        // Disk private untuk file data
         // TIDAK ada akses langsung dari web
         'private' => [
             'driver'     => 'local',

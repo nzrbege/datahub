@@ -30,6 +30,7 @@ class PersonalDataAudit extends Model
         'user_create'       => 'Membuat akun pengguna',
         'user_update'       => 'Mengubah akun pengguna',
         'user_deactivate'   => 'Mengubah status akun',
+        'password_change'   => 'Mengubah password sendiri',
         'password_reset'    => 'Mereset kata sandi',
     ];
 
@@ -55,6 +56,7 @@ class PersonalDataAudit extends Model
         'user_create'       => 'Akun pengguna baru dibuat.',
         'user_update'       => 'Data akun pengguna diperbarui.',
         'user_deactivate'   => 'Akun pengguna diaktifkan atau dinonaktifkan.',
+        'password_change'   => 'Pengguna mengganti password akunnya sendiri.',
         'password_reset'    => 'Kata sandi pengguna diganti oleh Super Admin.',
     ];
 
@@ -163,6 +165,8 @@ class PersonalDataAudit extends Model
             'user_create' => $this->userCreateSummary($context),
             'user_update' => $this->userUpdateSummary($context),
             'user_deactivate' => $this->statusSummary($context),
+            'password_change' => 'Password akun sendiri berhasil diperbarui.',
+            'password_reset' => 'Password akun direset oleh Super Admin.',
             default => $this->fallbackSummary($context),
         };
     }

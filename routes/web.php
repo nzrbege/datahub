@@ -20,6 +20,11 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/password', [AuthController::class, 'showPasswordForm'])->name('password.edit');
+    Route::put('/password', [AuthController::class, 'updatePassword'])->name('password.update');
+});
+
 Route::get('/', function () {
     if (auth()->check()) {
         return auth()->user()->isSuperAdmin()

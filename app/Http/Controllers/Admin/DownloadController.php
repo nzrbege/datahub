@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DataRequest;
 use App\Services\AuditService;
-use App\Services\FileEncryptionService;
+use App\Services\FileStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -14,7 +14,7 @@ class DownloadController extends Controller
 {
     public function __construct(
         private AuditService $audit,
-        private FileEncryptionService $encryption
+        private FileStorageService $fileStorage
     ) {}
 
     /**
@@ -69,9 +69,6 @@ class DownloadController extends Controller
         $dataFile = $dataRequest->dataFile;
 
         try {
-            // Dekripsi file
-            $decryptedContents = $this->encryption->decryptFromStorage($dataFile->file_path);
-
             // Tambah download count
             $dataRequest->increment('download_count');
 
@@ -92,8 +89,10 @@ class DownloadController extends Controller
             ], $dataRequest->dasar_hukum, $dataRequest->tujuan_penggunaan);
 
             // Stream file ke browser tanpa menyimpan di disk
-            return response()->streamDownload(function () use ($decryptedContents) {
-                echo $decryptedContents;
+            return response()->streamDownload(function () use ($dataFile) {
+                $this->fileStorage->streamFromStorage($dataFile->file_path, function (string $chunk) {
+                    echo $chunk;
+                });
             }, $dataFile->original_filename, [
                 'Content-Type'        => $this->getMimeType($dataFile->file_type),
                 'Content-Disposition' => 'attachment; filename="' . $dataFile->original_filename . '"',

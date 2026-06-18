@@ -14,10 +14,6 @@ return [
     'key'      => env('APP_KEY'),
     'cipher'   => 'AES-256-CBC',
 
-    // Kunci enkripsi file data (UU PDP Pasal 35)
-    // WAJIB diisi dengan nilai random yang kuat di production
-    'file_encryption_key' => env('FILE_ENCRYPTION_KEY'),
-
     // Audit log disimpan permanen (UU PDP Pasal 47)
     'audit_retention_days' => null,
 

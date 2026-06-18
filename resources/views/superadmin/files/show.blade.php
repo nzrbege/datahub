@@ -45,9 +45,9 @@
                         <div class="info-value">{{ $dataFile->tahun_data ?? '—' }}</div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label">Enkripsi</div>
+                        <div class="info-label">Penyimpanan</div>
                         <div class="info-value">
-                            <i class="fas fa-lock" style="color:var(--success);"></i> AES-256-CBC + HMAC-SHA256
+                            <i class="fas fa-shield-halved" style="color:var(--success);"></i> Storage privat; file diproteksi sebelum upload
                         </div>
                     </div>
                     <div class="info-row">

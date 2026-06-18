@@ -10,7 +10,7 @@
 
 <div class="pdp-notice">
     <i class="fas fa-shield-halved"></i>
-    <div><strong>UU PDP Pasal 35 — Keamanan Data:</strong> File yang diunggah akan dienkripsi otomatis dengan AES-256. Tentukan dengan cermat OPD mana yang diizinkan mengakses data ini. Hash SHA-256 dicatat untuk verifikasi integritas.</div>
+    <div><strong>UU PDP Pasal 35 - Keamanan Data:</strong> Pastikan file sudah diberi token/password sebelum diunggah. Sistem menyimpan file di storage privat, membatasi akses OPD, dan mencatat hash SHA-256 untuk verifikasi integritas.</div>
 </div>
 
 <form action="{{ route('superadmin.files.store') }}" method="POST" enctype="multipart/form-data">
@@ -63,7 +63,7 @@
                         ondrop="handleDrop(event)">
                         <i class="fas fa-cloud-arrow-up" style="font-size:28px; color:var(--brand-400); display:block; margin-bottom:10px;"></i>
                         <div style="font-size:13.5px; font-weight:700; color:var(--text-2);">Klik atau drag &amp; drop file di sini</div>
-                        <div style="font-size:11.5px; color:var(--text-muted); margin-top:5px;">Format: XLSX, CSV, ZIP &bull; Maks 50MB &bull; File akan <strong>dienkripsi AES-256</strong> otomatis</div>
+                        <div style="font-size:11.5px; color:var(--text-muted); margin-top:5px;">Format: XLSX, CSV, ZIP &bull; Maks 50MB &bull; Pastikan file sudah diberi token/password</div>
                     </div>
                     <input type="file" name="file" id="fileInput" accept=".xlsx,.csv,.zip" style="display:none;" required onchange="showFileInfo(this)">
                     <div id="fileInfo" style="display:none; margin-top:10px; padding:10px 13px; background:var(--success-bg); border:1px solid var(--success-border); border-radius:var(--radius-sm); font-size:12.5px; color:#065f46; display:flex; align-items:center; gap:8px;">
@@ -114,7 +114,7 @@
 
                 <div style="border-top:1px solid var(--border); margin-top:20px; padding-top:18px; display:flex; gap:10px;">
                     <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;">
-                        <i class="fas fa-cloud-arrow-up"></i> Unggah &amp; Enkripsi
+                        <i class="fas fa-cloud-arrow-up"></i> Unggah Dataset
                     </button>
                     <a href="{{ route('superadmin.files.index') }}" class="btn btn-ghost">Batal</a>
                 </div>
@@ -130,7 +130,7 @@ function showFileInfo(input) {
     if (!f) return;
     const size = f.size > 1024*1024 ? (f.size/1024/1024).toFixed(1)+' MB' : (f.size/1024).toFixed(0)+' KB';
     const info = document.getElementById('fileInfo');
-    document.getElementById('fileInfoText').textContent = f.name + ' · ' + size + ' — akan dienkripsi sebelum disimpan';
+    document.getElementById('fileInfoText').textContent = f.name + ' - ' + size + ' - akan disimpan di storage privat';
     info.style.display = 'flex';
     document.getElementById('dropZone').style.borderColor = 'var(--success)';
     document.getElementById('dropZone').style.background = 'var(--success-bg)';

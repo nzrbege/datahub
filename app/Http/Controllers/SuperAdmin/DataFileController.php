@@ -7,7 +7,7 @@ use App\Models\DataFile;
 use App\Models\DataFilePermission;
 use App\Models\User;
 use App\Services\AuditService;
-use App\Services\FileEncryptionService;
+use App\Services\FileStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -18,7 +18,7 @@ class DataFileController extends Controller
 {
     public function __construct(
         private AuditService $audit,
-        private FileEncryptionService $encryptionService
+        private FileStorageService $fileStorage
     ) {}
 
     public function index()
@@ -54,12 +54,12 @@ class DataFileController extends Controller
             $file         = $request->file('file');
             $originalName = $file->getClientOriginalName();
             $extension    = $file->getClientOriginalExtension();
-            $hash         = $this->encryptionService->computeHash($file->getRealPath());
-            $storedName   = $this->encryptionService->generateStoredFilename($extension);
+            $hash         = $this->fileStorage->computeHash($file->getRealPath());
+            $storedName   = $this->fileStorage->generateStoredFilename($extension);
             $storedPath   = 'data-files/' . $storedName;
 
-            // Enkripsi dan simpan
-            $this->encryptionService->encryptAndStore($file->getRealPath(), $storedPath);
+            // Simpan file asli ke storage private.
+            $this->fileStorage->storePrivate($file->getRealPath(), $storedPath);
 
             $dataFile = DataFile::create([
                 'judul'             => $request->judul,
@@ -70,7 +70,7 @@ class DataFileController extends Controller
                 'file_type'         => $extension,
                 'file_size'         => $file->getSize(),
                 'file_hash'         => $hash,
-                'is_encrypted'      => true,
+                'is_encrypted'      => false,
                 'kategori'          => $request->kategori,
                 'wilayah'           => null,
                 'tahun_data'        => $request->tahun_data,
@@ -99,7 +99,7 @@ class DataFileController extends Controller
 
             DB::commit();
             return redirect()->route('superadmin.files.index')
-                ->with('success', 'File berhasil diunggah dan dienkripsi.');
+                ->with('success', 'File berhasil diunggah.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['file' => 'Gagal mengunggah file: ' . $e->getMessage()]);
@@ -120,8 +120,6 @@ class DataFileController extends Controller
     public function download(DataFile $dataFile): StreamedResponse
     {
         try {
-            $decryptedContents = $this->encryptionService->decryptFromStorage($dataFile->file_path);
-
             $this->audit->logDownload(
                 auth()->id(),
                 $dataFile->id,
@@ -136,8 +134,10 @@ class DataFileController extends Controller
                 'source'             => 'superadmin.files.show',
             ]);
 
-            return response()->streamDownload(function () use ($decryptedContents) {
-                echo $decryptedContents;
+            return response()->streamDownload(function () use ($dataFile) {
+                $this->fileStorage->streamFromStorage($dataFile->file_path, function (string $chunk) {
+                    echo $chunk;
+                });
             }, $dataFile->original_filename, [
                 'Content-Type'           => $this->getMimeType($dataFile->file_type),
                 'Content-Disposition'    => 'attachment; filename="' . $dataFile->original_filename . '"',

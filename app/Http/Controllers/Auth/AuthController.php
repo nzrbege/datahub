@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -99,5 +101,40 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    public function showPasswordForm()
+    {
+        return view('auth.password');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(12)->mixedCase()->numbers()->symbols(),
+            ],
+        ], [
+            'current_password.current_password' => 'Password lama tidak sesuai.',
+            'password.min' => 'Password baru minimal 12 karakter.',
+            'password.mixed' => 'Password baru harus berisi huruf besar dan huruf kecil.',
+            'password.numbers' => 'Password baru harus berisi angka.',
+            'password.symbols' => 'Password baru harus berisi karakter khusus.',
+        ]);
+
+        $user = $request->user();
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        $this->audit->log('password_change', $user, [
+            'changed_by' => $user->id,
+            'changed_by_self' => true,
+        ]);
+
+        return back()->with('success', 'Password berhasil diperbarui.');
     }
 }
