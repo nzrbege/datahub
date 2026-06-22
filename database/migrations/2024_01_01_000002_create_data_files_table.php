@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('file_type'); // xlsx, csv, zip
             $table->bigInteger('file_size'); // bytes
             $table->string('file_hash'); // SHA-256 untuk integritas
-            $table->boolean('is_encrypted')->default(false);
+            $table->boolean('is_encrypted')->default(true);
             $table->string('kategori')->nullable()->comment('Kategori data: KK, KTP, dll');
             $table->integer('jumlah_record')->nullable();
             $table->string('wilayah')->nullable();

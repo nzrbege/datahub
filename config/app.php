@@ -14,6 +14,9 @@ return [
     'key'      => env('APP_KEY'),
     'cipher'   => 'AES-256-CBC',
 
+    // Kunci khusus file dataset; fallback ke APP_KEY jika belum diisi.
+    'file_encryption_key' => env('FILE_ENCRYPTION_KEY'),
+
     // Audit log disimpan permanen (UU PDP Pasal 47)
     'audit_retention_days' => null,
 

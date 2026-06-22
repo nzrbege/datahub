@@ -58,8 +58,8 @@ class DataFileController extends Controller
             $storedName   = $this->fileStorage->generateStoredFilename($extension);
             $storedPath   = 'data-files/' . $storedName;
 
-            // Simpan file asli ke storage private.
-            $this->fileStorage->storePrivate($file->getRealPath(), $storedPath);
+            // Enkripsi secara streaming lalu simpan ke storage private.
+            $this->fileStorage->encryptAndStore($file->getRealPath(), $storedPath);
 
             $dataFile = DataFile::create([
                 'judul'             => $request->judul,
@@ -70,7 +70,7 @@ class DataFileController extends Controller
                 'file_type'         => $extension,
                 'file_size'         => $file->getSize(),
                 'file_hash'         => $hash,
-                'is_encrypted'      => false,
+                'is_encrypted'      => true,
                 'kategori'          => $request->kategori,
                 'wilayah'           => null,
                 'tahun_data'        => $request->tahun_data,
@@ -99,7 +99,7 @@ class DataFileController extends Controller
 
             DB::commit();
             return redirect()->route('superadmin.files.index')
-                ->with('success', 'File berhasil diunggah.');
+                ->with('success', 'File berhasil diunggah dan dienkripsi.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['file' => 'Gagal mengunggah file: ' . $e->getMessage()]);
@@ -135,7 +135,7 @@ class DataFileController extends Controller
             ]);
 
             return response()->streamDownload(function () use ($dataFile) {
-                $this->fileStorage->streamFromStorage($dataFile->file_path, function (string $chunk) {
+                $this->fileStorage->streamFromStorage($dataFile->file_path, $dataFile->is_encrypted, function (string $chunk) {
                     echo $chunk;
                 });
             }, $dataFile->original_filename, [

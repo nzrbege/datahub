@@ -90,7 +90,7 @@ class DownloadController extends Controller
 
             // Stream file ke browser tanpa menyimpan di disk
             return response()->streamDownload(function () use ($dataFile) {
-                $this->fileStorage->streamFromStorage($dataFile->file_path, function (string $chunk) {
+                $this->fileStorage->streamFromStorage($dataFile->file_path, $dataFile->is_encrypted, function (string $chunk) {
                     echo $chunk;
                 });
             }, $dataFile->original_filename, [
