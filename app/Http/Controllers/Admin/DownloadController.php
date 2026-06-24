@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DataRequest;
+use App\Models\DownloadPicContact;
 use App\Services\AuditService;
 use App\Services\FileStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DownloadController extends Controller
 {
@@ -32,13 +32,15 @@ class DownloadController extends Controller
             return back()->withErrors(['error' => 'Permintaan ini tidak dapat diunduh saat ini.']);
         }
 
-        return view('admin.download.show', compact('dataRequest'));
+        $downloadPicContact = DownloadPicContact::current();
+
+        return view('admin.download.show', compact('dataRequest', 'downloadPicContact'));
     }
 
     /**
      * Proses download setelah captcha diverifikasi
      */
-    public function download(Request $request, DataRequest $dataRequest): StreamedResponse
+    public function download(Request $request, DataRequest $dataRequest)
     {
         if ($dataRequest->user_id !== auth()->id()) {
             abort(403);
@@ -69,6 +71,8 @@ class DownloadController extends Controller
         $dataFile = $dataRequest->dataFile;
 
         try {
+            $this->fileStorage->assertReadable($dataFile->file_path, $dataFile->is_encrypted);
+
             // Tambah download count
             $dataRequest->increment('download_count');
 

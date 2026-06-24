@@ -652,6 +652,9 @@
                 <a href="{{ route('superadmin.files.index') }}" class="nav-link {{ request()->routeIs('superadmin.files.*') ? 'active' : '' }}">
                     <i class="fas fa-database"></i> Kelola Dataset
                 </a>
+                <a href="{{ route('superadmin.nda-templates.index') }}" class="nav-link {{ request()->routeIs('superadmin.nda-templates.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-contract"></i> Template NDA
+                </a>
 
                 <div class="nav-label">Permintaan</div>
                 <a href="{{ route('superadmin.requests.index') }}" class="nav-link {{ request()->routeIs('superadmin.requests.*') ? 'active' : '' }}">
@@ -661,6 +664,9 @@
                 <div class="nav-label">Manajemen</div>
                 <a href="{{ route('superadmin.users.index') }}" class="nav-link {{ request()->routeIs('superadmin.users.*') ? 'active' : '' }}">
                     <i class="fas fa-users-gear"></i> Pengguna OPD
+                </a>
+                <a href="{{ route('superadmin.download-pic.edit') }}" class="nav-link {{ request()->routeIs('superadmin.download-pic.*') ? 'active' : '' }}">
+                    <i class="fas fa-address-card"></i> Kontak PIC
                 </a>
 
                 <div class="nav-label">Kepatuhan</div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DataFile;
 use App\Models\DataRequest;
+use App\Models\NdaTemplate;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -36,8 +37,9 @@ class DataRequestController extends Controller
         $availableFiles = auth()->user()->accessibleFiles()
             ->where('is_active', true)
             ->get();
+        $activeNdaTemplate = NdaTemplate::active();
 
-        return view('admin.requests.create', compact('availableFiles'));
+        return view('admin.requests.create', compact('availableFiles', 'activeNdaTemplate'));
     }
 
     public function store(Request $request)

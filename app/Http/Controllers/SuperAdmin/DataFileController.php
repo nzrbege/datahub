@@ -120,6 +120,8 @@ class DataFileController extends Controller
     public function download(DataFile $dataFile): StreamedResponse
     {
         try {
+            $this->fileStorage->assertReadable($dataFile->file_path, $dataFile->is_encrypted);
+
             $this->audit->logDownload(
                 auth()->id(),
                 $dataFile->id,

@@ -23,6 +23,9 @@ class PersonalDataAudit extends Model
         'request_revoke'    => 'Mencabut persetujuan data',
         'nda_view'          => 'Melihat dokumen NDA',
         'nda_download'      => 'Mengunduh dokumen NDA',
+        'nda_template_upload' => 'Mengunggah template NDA',
+        'nda_template_download' => 'Mengunduh template NDA',
+        'download_pic_update' => 'Mengubah kontak PIC unduhan',
         'quota_update'      => 'Mengubah kuota download',
         'quota_reset'       => 'Mereset kuota download',
         'permission_grant'  => 'Mengubah izin akses OPD',
@@ -50,6 +53,9 @@ class PersonalDataAudit extends Model
         'request_revoke'    => 'Super Admin mencabut persetujuan yang masih aktif.',
         'nda_view'          => 'Dokumen perjanjian kerahasiaan dibuka.',
         'nda_download'      => 'Dokumen perjanjian kerahasiaan diunduh.',
+        'nda_template_upload' => 'Template perjanjian kerahasiaan diperbarui.',
+        'nda_template_download' => 'Template perjanjian kerahasiaan diunduh.',
+        'download_pic_update' => 'Kontak PIC password file diperbarui.',
         'quota_update'      => 'Batas jumlah unduhan diubah.',
         'quota_reset'       => 'Hitungan kuota unduhan dimulai ulang.',
         'permission_grant'  => 'Daftar OPD yang boleh mengakses dataset diperbarui.',
@@ -65,6 +71,8 @@ class PersonalDataAudit extends Model
     private const RESOURCE_LABELS = [
         'DataFile'    => 'Dataset',
         'DataRequest' => 'Permintaan data',
+        'DownloadPicContact' => 'Kontak PIC',
+        'NdaTemplate' => 'Template NDA',
         'User'        => 'Akun pengguna',
     ];
 
@@ -122,9 +130,9 @@ class PersonalDataAudit extends Model
             in_array($this->action, ['login']) => 'action-login',
             in_array($this->action, ['logout']) => 'action-logout',
             in_array($this->action, ['login_failed']) => 'action-failed',
-            in_array($this->action, ['file_download', 'nda_download']) => 'action-download',
-            in_array($this->action, ['file_upload']) => 'action-upload',
-            in_array($this->action, ['request_approve', 'permission_grant', 'quota_update', 'quota_reset']) => 'action-approve',
+            in_array($this->action, ['file_download', 'nda_download', 'nda_template_download']) => 'action-download',
+            in_array($this->action, ['file_upload', 'nda_template_upload']) => 'action-upload',
+            in_array($this->action, ['request_approve', 'permission_grant', 'quota_update', 'quota_reset', 'download_pic_update']) => 'action-approve',
             in_array($this->action, ['request_reject', 'request_revoke', 'file_delete']) => 'action-reject',
             default => 'action-default',
         };
@@ -159,6 +167,8 @@ class PersonalDataAudit extends Model
             'file_upload' => $this->fileUploadSummary($context),
             'file_download' => $this->fileDownloadSummary($context),
             'file_delete' => $this->valueSummary($context, 'original_filename', 'File'),
+            'nda_template_upload', 'nda_template_download' => $this->valueSummary($context, 'template_filename', 'Template'),
+            'download_pic_update' => $this->downloadPicSummary($context),
             'request_create', 'request_revise' => $this->requestSubmissionSummary($context),
             'request_approve', 'quota_update', 'quota_reset' => $this->quotaSummary($context),
             'request_reject', 'request_revoke' => $this->valueSummary($context, 'catatan', 'Catatan'),
@@ -245,6 +255,16 @@ class PersonalDataAudit extends Model
         }
 
         return $this->fallbackSummary($context);
+    }
+
+    private function downloadPicSummary(array $context): string
+    {
+        $parts = array_filter([
+            !empty($context['nama_pic']) ? 'PIC: ' . $context['nama_pic'] : null,
+            !empty($context['nomor_hp']) ? 'Nomor HP: ' . $context['nomor_hp'] : null,
+        ]);
+
+        return $parts ? implode('; ', $parts) . '.' : '-';
     }
 
     private function userCreateSummary(array $context): string

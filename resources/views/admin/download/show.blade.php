@@ -40,6 +40,38 @@
                 </div>
             </div>
 
+            <div style="background:var(--info-bg); border:1.5px solid var(--info-border); border-radius:var(--radius-sm); padding:14px 16px; margin-bottom:18px; display:flex; gap:12px; align-items:flex-start;">
+                <i class="fas fa-key" style="color:var(--info); font-size:16px; margin-top:2px; flex-shrink:0;"></i>
+                <div style="flex:1;">
+                    <div style="font-size:12.5px; font-weight:800; color:#1e3a8a; margin-bottom:4px;">Password Pembuka File</div>
+                    @if($downloadPicContact)
+                        <div style="font-size:12.5px; color:var(--text-2); line-height:1.65;">
+                            File dataset dapat memiliki password. Hubungi PIC berikut untuk meminta password pembuka file.
+                        </div>
+                        <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
+                            <div style="display:flex; justify-content:space-between; gap:12px;">
+                                <span style="font-size:12px; color:var(--text-muted);">Nama PIC</span>
+                                <strong style="font-size:12.5px; color:var(--text); text-align:right;">{{ $downloadPicContact->nama_pic }}</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; gap:12px;">
+                                <span style="font-size:12px; color:var(--text-muted);">No. HP</span>
+                                <strong style="font-size:12.5px; color:var(--text); text-align:right;">{{ $downloadPicContact->nomor_hp }}</strong>
+                            </div>
+                        </div>
+                        @if($downloadPicContact->keterangan)
+                            <div style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">{{ $downloadPicContact->keterangan }}</div>
+                        @endif
+                        <a href="{{ $downloadPicContact->whatsapp_url }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline" style="margin-top:12px;">
+                            <i class="fab fa-whatsapp"></i> Hubungi PIC
+                        </a>
+                    @else
+                        <div style="font-size:12.5px; color:var(--text-2); line-height:1.65;">
+                            Kontak PIC password file belum diatur. Silakan hubungi Super Admin.
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             <!-- Captcha -->
             <form action="{{ route('admin.download.process', $dataRequest) }}" method="POST">
                 @csrf

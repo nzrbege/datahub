@@ -140,6 +140,30 @@ class FileStorageService
         }
     }
 
+    public function assertReadable(string $diskPath, bool $encrypted): void
+    {
+        $stream = Storage::disk('private')->readStream($diskPath);
+
+        if ($stream === false) {
+            throw new RuntimeException('File tidak ditemukan di storage.');
+        }
+
+        if (!$encrypted) {
+            fclose($stream);
+            return;
+        }
+
+        $this->ensureSodiumAvailable();
+        $key = $this->getKey();
+
+        try {
+            $this->processEncryptedStream($stream, $key);
+        } finally {
+            fclose($stream);
+            sodium_memzero($key);
+        }
+    }
+
     public function computeHash(string $filePath): string
     {
         return hash_file('sha256', $filePath);

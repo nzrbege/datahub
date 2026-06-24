@@ -29,6 +29,9 @@ class AuditService
     const ACTION_REQUEST_REVOKE = 'request_revoke';
     const ACTION_NDA_VIEW       = 'nda_view';
     const ACTION_NDA_DOWNLOAD   = 'nda_download';
+    const ACTION_NDA_TEMPLATE_UPLOAD   = 'nda_template_upload';
+    const ACTION_NDA_TEMPLATE_DOWNLOAD = 'nda_template_download';
+    const ACTION_DOWNLOAD_PIC_UPDATE   = 'download_pic_update';
     const ACTION_QUOTA_UPDATE   = 'quota_update';
     const ACTION_QUOTA_RESET    = 'quota_reset';
     const ACTION_PERMISSION_GRANT  = 'permission_grant';

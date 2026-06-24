@@ -3,10 +3,13 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\DataRequestController as AdminDataRequestController;
 use App\Http\Controllers\Admin\DownloadController;
+use App\Http\Controllers\Admin\NdaTemplateController as AdminNdaTemplateController;
 use App\Http\Controllers\SuperAdmin\AuditLogController;
 use App\Http\Controllers\SuperAdmin\DataFileController;
 use App\Http\Controllers\SuperAdmin\DataRequestController as SuperAdminDataRequestController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
+use App\Http\Controllers\SuperAdmin\DownloadPicContactController;
+use App\Http\Controllers\SuperAdmin\NdaTemplateController as SuperAdminNdaTemplateController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +56,14 @@ Route::prefix('superadmin')
         Route::put('/files/{dataFile}/permissions', [DataFileController::class, 'updatePermissions'])->name('files.permissions');
         Route::delete('/files/{dataFile}', [DataFileController::class, 'destroy'])->name('files.destroy');
 
+        // Template NDA
+        Route::get('/nda-templates', [SuperAdminNdaTemplateController::class, 'index'])->name('nda-templates.index');
+        Route::post('/nda-templates', [SuperAdminNdaTemplateController::class, 'store'])->name('nda-templates.store');
+
+        // Kontak PIC password file
+        Route::get('/download-pic', [DownloadPicContactController::class, 'edit'])->name('download-pic.edit');
+        Route::put('/download-pic', [DownloadPicContactController::class, 'update'])->name('download-pic.update');
+
         // User management
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
@@ -96,6 +107,7 @@ Route::prefix('admin')
         Route::get('/requests/{dataRequest}', [AdminDataRequestController::class, 'show'])->name('requests.show');
         Route::get('/requests/{dataRequest}/edit', [AdminDataRequestController::class, 'edit'])->name('requests.edit');
         Route::put('/requests/{dataRequest}', [AdminDataRequestController::class, 'update'])->name('requests.update');
+        Route::get('/nda-template/download', [AdminNdaTemplateController::class, 'download'])->name('nda-template.download');
 
         // Download dengan captcha
         Route::get('/download/{dataRequest}', [DownloadController::class, 'showDownloadPage'])->name('download.show');

@@ -52,6 +52,16 @@
 
                 <div class="form-group">
                     <label class="form-label">Dokumen NDA (Perjanjian Kerahasiaan) <span class="required">*</span></label>
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px;">
+                        <div class="form-text" style="margin-top:0;">Unduh template, lengkapi tanda tangan dan stempel instansi, lalu unggah kembali sebagai PDF.</div>
+                        @if($activeNdaTemplate)
+                            <a href="{{ route('admin.nda-template.download') }}" class="btn btn-sm btn-outline">
+                                <i class="fas fa-download"></i> Download Template NDA
+                            </a>
+                        @else
+                            <span class="badge badge-revoked">Template belum tersedia</span>
+                        @endif
+                    </div>
                     <div style="display:flex; align-items:center; gap:10px;">
                         <div id="ndaDropZone" style="flex:1; border:1.5px dashed var(--border-dark); border-radius:var(--radius-sm); padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:all .15s; background:var(--surface-2);"
                             onclick="document.getElementById('ndaInput').click()">
