@@ -169,10 +169,13 @@
             width: 5px; height: 5px; border-radius: 50%;
             background: var(--brand-300);
         }
+        .nav-link.has-notification.active::after { right: 44px; }
         .nav-link i { width: 16px; text-align: center; font-size: 13px; opacity: .8; }
         .nav-badge {
             margin-left: auto; background: var(--accent); color: #fff;
-            font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 999px;
+            min-width: 18px; text-align: center;
+            font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 999px;
+            box-shadow: 0 0 0 2px rgba(10,22,40,.9);
         }
 
         .sidebar-footer {
@@ -359,8 +362,16 @@
         .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
         .badge-pending  { background: #fef9c3; color: #713f12; }
         .badge-pending::before { background: #ca8a04; }
-        .badge-approved { background: #dcfce7; color: #14532d; }
-        .badge-approved::before { background: #16a34a; }
+        .badge-returned  { background: #fffbeb; color: #92400e; }
+        .badge-returned::before { background: #f59e0b; }
+        .badge-blue, .badge-approved { background: #dbeafe; color: #1e3a8a; }
+        .badge-blue::before, .badge-approved::before { background: #2563eb; }
+        .badge-bast_pending { background: #fef9c3; color: #713f12; }
+        .badge-bast_pending::before { background: #ca8a04; }
+        .badge-bast_approved { background: #dcfce7; color: #14532d; }
+        .badge-bast_approved::before { background: #16a34a; }
+        .badge-bast_rejected { background: #fee2e2; color: #7f1d1d; }
+        .badge-bast_rejected::before { background: #dc2626; }
         .badge-rejected { background: #fee2e2; color: #7f1d1d; }
         .badge-rejected::before { background: #dc2626; }
         .badge-revoked  { background: var(--surface-3); color: var(--text-muted); }
@@ -653,15 +664,30 @@
                     <i class="fas fa-database"></i> Kelola Dataset
                 </a>
                 <a href="{{ route('superadmin.nda-templates.index') }}" class="nav-link {{ request()->routeIs('superadmin.nda-templates.*') ? 'active' : '' }}">
-                    <i class="fas fa-file-contract"></i> Template NDA
+                    <i class="fas fa-file-contract"></i> Template Dokumen
                 </a>
 
                 <div class="nav-label">Permintaan</div>
-                <a href="{{ route('superadmin.requests.index') }}" class="nav-link {{ request()->routeIs('superadmin.requests.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.requests.index') }}" class="nav-link {{ ($approvalNotifications['data_requests'] ?? 0) > 0 ? 'has-notification' : '' }} {{ request()->routeIs('superadmin.requests.*') ? 'active' : '' }}">
                     <i class="fas fa-inbox"></i> Permintaan Akses
+                    @if(($approvalNotifications['data_requests'] ?? 0) > 0)
+                        <span class="nav-badge" title="{{ $approvalNotifications['data_requests'] }} menunggu approval">{{ $approvalNotifications['data_requests'] > 99 ? '99+' : $approvalNotifications['data_requests'] }}</span>
+                    @endif
+                </a>
+                <a href="{{ route('superadmin.evaluations.index') }}" class="nav-link {{ request()->routeIs('superadmin.evaluations.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-check"></i> Evaluasi Pemanfaatan
+                </a>
+                <a href="{{ route('monitoring.requests.index') }}" class="nav-link {{ request()->routeIs('monitoring.requests.*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-simple"></i> Monitoring Permohonan
                 </a>
 
                 <div class="nav-label">Manajemen</div>
+                <a href="{{ route('superadmin.user-registrations.index') }}" class="nav-link {{ ($approvalNotifications['user_registrations'] ?? 0) > 0 ? 'has-notification' : '' }} {{ request()->routeIs('superadmin.user-registrations.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-check"></i> Permohonan User
+                    @if(($approvalNotifications['user_registrations'] ?? 0) > 0)
+                        <span class="nav-badge" title="{{ $approvalNotifications['user_registrations'] }} menunggu approval">{{ $approvalNotifications['user_registrations'] > 99 ? '99+' : $approvalNotifications['user_registrations'] }}</span>
+                    @endif
+                </a>
                 <a href="{{ route('superadmin.users.index') }}" class="nav-link {{ request()->routeIs('superadmin.users.*') ? 'active' : '' }}">
                     <i class="fas fa-users-gear"></i> Pengguna OPD
                 </a>
@@ -689,6 +715,14 @@
                 <a href="{{ route('admin.requests.create') }}" class="nav-link {{ request()->routeIs('admin.requests.create') ? 'active' : '' }}">
                     <i class="fas fa-circle-plus"></i> Ajukan Permintaan
                 </a>
+                <a href="{{ route('admin.evaluations.index') }}" class="nav-link {{ request()->routeIs('admin.evaluations.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-check"></i> Evaluasi Pemanfaatan
+                </a>
+                @if(auth()->user()->canAccessRequestMonitoring())
+                    <a href="{{ route('monitoring.requests.index') }}" class="nav-link {{ request()->routeIs('monitoring.requests.*') ? 'active' : '' }}">
+                        <i class="fas fa-chart-simple"></i> Monitoring Permohonan
+                    </a>
+                @endif
             @endif
 
             <div class="nav-label">Akun</div>
@@ -733,6 +767,9 @@
         <div class="main-content">
             @if(session('success'))
                 <div class="alert alert-success"><i class="fas fa-circle-check"></i><div>{{ session('success') }}</div></div>
+            @endif
+            @if(session('warning'))
+                <div class="alert alert-warning"><i class="fas fa-triangle-exclamation"></i><div>{{ session('warning') }}</div></div>
             @endif
             @if(session('error'))
                 <div class="alert alert-danger"><i class="fas fa-circle-xmark"></i><div>{{ session('error') }}</div></div>

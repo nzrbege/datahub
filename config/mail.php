@@ -100,4 +100,19 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Registration Request Notifications
+    |--------------------------------------------------------------------------
+    |
+    | Comma-separated email addresses that should receive a notification when a
+    | guest submits the registration form. Active super_admin users are also
+    | included automatically by the registration controller.
+    |
+    */
+
+    'registration_notifications' => [
+        'to' => env('REGISTRATION_NOTIFICATION_EMAILS', ''),
+    ],
+
 ];

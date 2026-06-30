@@ -263,7 +263,7 @@
     <div class="login-right">
         <div class="form-header">
             <h3>Masuk ke Sistem</h3>
-            <p>Masuk untuk mengakses dataset, mengajukan permintaan, dan memantau riwayat akses data.</p>
+            <p>Masuk dengan email untuk mengakses dataset, mengajukan permintaan, dan memantau riwayat akses data.</p>
         </div>
 
         @if($errors->any())
@@ -277,12 +277,12 @@
             @csrf
 
             <div class="form-group">
-                <label class="form-label"><i class="fas fa-user" style="color:#94a3b8;font-size:11px"></i> Username</label>
+                <label class="form-label"><i class="fas fa-envelope" style="color:#94a3b8;font-size:11px"></i> Email</label>
                 <div class="input-wrap">
                     <i class="fas fa-at input-icon"></i>
-                    <input type="text" name="username" class="form-control"
-                        value="{{ old('username') }}" required autofocus
-                        placeholder="Masukkan username Anda">
+                    <input type="email" name="email" class="form-control"
+                        value="{{ old('email') }}" required autofocus
+                        placeholder="nama@opd.go.id">
                 </div>
             </div>
 
@@ -309,6 +309,11 @@
                 <i class="fas fa-right-to-bracket"></i> Masuk ke Sistem
             </button>
         </form>
+
+        <div class="divider">Belum punya akun?</div>
+        <a href="{{ route('register.request') }}" class="btn-login" style="background:#f8fafc;color:#1e4976;box-shadow:none;border:1.5px solid #cbd5e1;text-decoration:none;">
+            <i class="fas fa-user-plus"></i> Ajukan Registrasi User
+        </a>
 
         <div class="pdp-box">
             <strong><i class="fas fa-triangle-exclamation" style="color:#d97706;"></i> Peringatan Keamanan Data:</strong><br>

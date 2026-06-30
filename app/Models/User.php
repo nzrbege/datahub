@@ -88,6 +88,11 @@ class User extends Authenticatable
         return $this->hasMany(DownloadLog::class);
     }
 
+    public function utilizationEvaluations()
+    {
+        return $this->hasMany(DataUtilizationEvaluation::class);
+    }
+
     // ─── Helper Methods ────────────────────────────────────────────────────────
 
     public function isSuperAdmin(): bool
@@ -98,6 +103,20 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');
+    }
+
+    public function isBadanPerencanaanAdmin(): bool
+    {
+        return $this->isAdmin()
+            && str_contains(
+                strtolower((string) $this->instansi),
+                'badan perencanaan pembangunan, riset, dan inovasi daerah'
+            );
+    }
+
+    public function canAccessRequestMonitoring(): bool
+    {
+        return $this->isSuperAdmin() || $this->isBadanPerencanaanAdmin();
     }
 
     public function isLocked(): bool

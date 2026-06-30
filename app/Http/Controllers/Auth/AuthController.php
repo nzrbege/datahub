@@ -29,7 +29,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'username' => ['required', 'string'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 
@@ -38,25 +38,26 @@ class AuthController extends Controller
         if (RateLimiter::tooManyAttempts($key, 5)) {
             $seconds = RateLimiter::availableIn($key);
             $this->audit->log(AuditService::ACTION_LOGIN_FAILED, null, [
-                'username' => $request->username,
+                'email' => $request->email,
                 'reason' => 'rate_limited',
             ]);
             throw ValidationException::withMessages([
-                'username' => "Terlalu banyak percobaan. Coba lagi dalam {$seconds} detik.",
+                'email' => "Terlalu banyak percobaan. Coba lagi dalam {$seconds} detik.",
             ]);
         }
 
-        $user = User::where('username', $request->username)->first();
+        $email = strtolower(trim($request->email));
+        $user = User::where('email', $email)->first();
 
         // Cek user ada dan aktif
         if (!$user || !$user->is_active) {
             RateLimiter::hit($key);
             $this->audit->log(AuditService::ACTION_LOGIN_FAILED, null, [
-                'username' => $request->username,
+                'email' => $email,
                 'reason' => 'user_not_found_or_inactive',
             ]);
             throw ValidationException::withMessages([
-                'username' => 'Username atau kata sandi tidak valid.',
+                'email' => 'Email atau kata sandi tidak valid.',
             ]);
         }
 
@@ -67,12 +68,12 @@ class AuthController extends Controller
                 'locked_until' => $user->locked_until,
             ]);
             throw ValidationException::withMessages([
-                'username' => 'Akun Anda dikunci sementara karena terlalu banyak percobaan login. ' .
+                'email' => 'Akun Anda dikunci sementara karena terlalu banyak percobaan login. ' .
                            'Coba lagi pada ' . $user->locked_until->format('H:i'),
             ]);
         }
 
-        if (!Auth::attempt($request->only('username', 'password'), $request->boolean('remember'))) {
+        if (!Auth::attempt(['email' => $email, 'password' => $request->password], $request->boolean('remember'))) {
             RateLimiter::hit($key);
             $user->incrementFailedLogin();
             $this->audit->log(AuditService::ACTION_LOGIN_FAILED, $user, [
@@ -80,7 +81,7 @@ class AuthController extends Controller
                 'attempts' => $user->failed_login_attempts,
             ]);
             throw ValidationException::withMessages([
-                'username' => 'Username atau kata sandi tidak valid.',
+                'email' => 'Email atau kata sandi tidak valid.',
             ]);
         }
 

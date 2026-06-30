@@ -8,6 +8,7 @@ use App\Models\DataFilePermission;
 use App\Models\User;
 use App\Services\AuditService;
 use App\Services\FileStorageService;
+use App\Support\Security\FileResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -52,7 +53,7 @@ class DataFileController extends Controller
         DB::beginTransaction();
         try {
             $file         = $request->file('file');
-            $originalName = $file->getClientOriginalName();
+            $originalName = FileResponse::safeFilename($file->getClientOriginalName(), 'dataset');
             $extension    = $file->getClientOriginalExtension();
             $hash         = $this->fileStorage->computeHash($file->getRealPath());
             $storedName   = $this->fileStorage->generateStoredFilename($extension);
@@ -140,9 +141,8 @@ class DataFileController extends Controller
                 $this->fileStorage->streamFromStorage($dataFile->file_path, $dataFile->is_encrypted, function (string $chunk) {
                     echo $chunk;
                 });
-            }, $dataFile->original_filename, [
+            }, FileResponse::safeFilename($dataFile->original_filename, 'dataset.' . $dataFile->file_type), [
                 'Content-Type'           => $this->getMimeType($dataFile->file_type),
-                'Content-Disposition'    => 'attachment; filename="' . $dataFile->original_filename . '"',
                 'X-Content-Type-Options' => 'nosniff',
                 'Cache-Control'          => 'no-store, no-cache, must-revalidate',
                 'Pragma'                 => 'no-cache',

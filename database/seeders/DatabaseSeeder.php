@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(OpdSeeder::class);
+
         // Buat roles
         $superAdminRole = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
         $adminRole      = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);

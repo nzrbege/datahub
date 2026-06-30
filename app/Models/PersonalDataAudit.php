@@ -21,13 +21,16 @@ class PersonalDataAudit extends Model
         'request_approve'   => 'Menyetujui permintaan data',
         'request_reject'    => 'Menolak permintaan data',
         'request_revoke'    => 'Mencabut persetujuan data',
-        'nda_view'          => 'Melihat dokumen NDA',
-        'nda_download'      => 'Mengunduh dokumen NDA',
-        'nda_template_upload' => 'Mengunggah template NDA',
-        'nda_template_download' => 'Mengunduh template NDA',
+        'nda_view'          => 'Melihat dokumen permohonan',
+        'nda_download'      => 'Mengunduh dokumen permohonan',
+        'nda_template_upload' => 'Mengunggah template dokumen',
+        'nda_template_download' => 'Mengunduh template dokumen',
         'download_pic_update' => 'Mengubah kontak PIC unduhan',
         'quota_update'      => 'Mengubah kuota download',
         'quota_reset'       => 'Mereset kuota download',
+        'utilization_evaluation_upload' => 'Mengunggah evaluasi pemanfaatan',
+        'utilization_evaluation_view' => 'Melihat evaluasi pemanfaatan',
+        'utilization_evaluation_download' => 'Mengunduh evaluasi pemanfaatan',
         'permission_grant'  => 'Mengubah izin akses OPD',
         'permission_revoke' => 'Mencabut izin akses OPD',
         'user_create'       => 'Membuat akun pengguna',
@@ -51,13 +54,16 @@ class PersonalDataAudit extends Model
         'request_approve'   => 'Super Admin menyetujui permintaan akses data.',
         'request_reject'    => 'Super Admin menolak permintaan akses data.',
         'request_revoke'    => 'Super Admin mencabut persetujuan yang masih aktif.',
-        'nda_view'          => 'Dokumen perjanjian kerahasiaan dibuka.',
-        'nda_download'      => 'Dokumen perjanjian kerahasiaan diunduh.',
-        'nda_template_upload' => 'Template perjanjian kerahasiaan diperbarui.',
-        'nda_template_download' => 'Template perjanjian kerahasiaan diunduh.',
+        'nda_view'          => 'Dokumen permohonan dibuka.',
+        'nda_download'      => 'Dokumen permohonan diunduh.',
+        'nda_template_upload' => 'Template dokumen diperbarui.',
+        'nda_template_download' => 'Template dokumen diunduh.',
         'download_pic_update' => 'Kontak PIC password file diperbarui.',
         'quota_update'      => 'Batas jumlah unduhan diubah.',
         'quota_reset'       => 'Hitungan kuota unduhan dimulai ulang.',
+        'utilization_evaluation_upload' => 'Laporan pemanfaatan data diunggah oleh OPD.',
+        'utilization_evaluation_view' => 'Laporan pemanfaatan data dibuka oleh Super Admin.',
+        'utilization_evaluation_download' => 'Laporan pemanfaatan data diunduh oleh Super Admin.',
         'permission_grant'  => 'Daftar OPD yang boleh mengakses dataset diperbarui.',
         'permission_revoke' => 'Izin akses OPD dicabut.',
         'user_create'       => 'Akun pengguna baru dibuat.',
@@ -72,7 +78,8 @@ class PersonalDataAudit extends Model
         'DataFile'    => 'Dataset',
         'DataRequest' => 'Permintaan data',
         'DownloadPicContact' => 'Kontak PIC',
-        'NdaTemplate' => 'Template NDA',
+        'DataUtilizationEvaluation' => 'Evaluasi pemanfaatan',
+        'NdaTemplate' => 'Template Dokumen',
         'User'        => 'Akun pengguna',
     ];
 
@@ -130,8 +137,8 @@ class PersonalDataAudit extends Model
             in_array($this->action, ['login']) => 'action-login',
             in_array($this->action, ['logout']) => 'action-logout',
             in_array($this->action, ['login_failed']) => 'action-failed',
-            in_array($this->action, ['file_download', 'nda_download', 'nda_template_download']) => 'action-download',
-            in_array($this->action, ['file_upload', 'nda_template_upload']) => 'action-upload',
+            in_array($this->action, ['file_download', 'nda_download', 'nda_template_download', 'utilization_evaluation_download']) => 'action-download',
+            in_array($this->action, ['file_upload', 'nda_template_upload', 'utilization_evaluation_upload']) => 'action-upload',
             in_array($this->action, ['request_approve', 'permission_grant', 'quota_update', 'quota_reset', 'download_pic_update']) => 'action-approve',
             in_array($this->action, ['request_reject', 'request_revoke', 'file_delete']) => 'action-reject',
             default => 'action-default',
@@ -173,6 +180,7 @@ class PersonalDataAudit extends Model
             'request_approve', 'quota_update', 'quota_reset' => $this->quotaSummary($context),
             'request_reject', 'request_revoke' => $this->valueSummary($context, 'catatan', 'Catatan'),
             'nda_view', 'nda_download' => $this->valueSummary($context, 'nda_filename', 'Dokumen'),
+            'utilization_evaluation_upload', 'utilization_evaluation_view', 'utilization_evaluation_download' => $this->valueSummary($context, 'report_filename', 'Laporan'),
             'permission_grant' => $this->permissionSummary($context),
             'user_create' => $this->userCreateSummary($context),
             'user_update' => $this->userUpdateSummary($context),
@@ -339,7 +347,10 @@ class PersonalDataAudit extends Model
 
     private function roleLabel(string $role): string
     {
-        return $role === 'super_admin' ? 'Super Admin' : 'Admin OPD';
+        return match ($role) {
+            'super_admin' => 'Super Admin',
+            default => 'Admin OPD',
+        };
     }
 
     /**

@@ -31,23 +31,14 @@
                         <div class="info-value" style="font-weight:700;">{{ $dataRequest->dataFile->judul }}</div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label">Dasar Hukum</div>
-                        <div class="info-value">{{ $dataRequest->dasar_hukum }}</div>
-                    </div>
-                    <div class="info-row">
                         <div class="info-label">Tanggal Diajukan</div>
                         <div class="info-value">{{ $dataRequest->created_at->format('d F Y, H:i') }}</div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label"><i class="fas fa-comment-dots" style="color:var(--text-ghost)"></i> Alasan Permintaan</label>
-                    <div class="text-block">{{ $dataRequest->alasan_permintaan }}</div>
-                </div>
-
-                <div class="form-group" style="margin-bottom:0;">
-                    <label class="form-label"><i class="fas fa-bullseye" style="color:var(--text-ghost)"></i> Tujuan Penggunaan</label>
-                    <div class="text-block">{{ $dataRequest->tujuan_penggunaan }}</div>
+                    <label class="form-label"><i class="fas fa-comment-dots" style="color:var(--text-ghost)"></i> Alasan dan Tujuan Penggunaan</label>
+                    <div class="text-block">{{ $dataRequest->reason_and_purpose }}</div>
                 </div>
 
                 @if($dataRequest->nda_path)
@@ -55,7 +46,7 @@
                     <div style="display:flex;align-items:center;gap:10px;">
                         <i class="fas fa-file-pdf" style="color:#dc2626;font-size:20px;"></i>
                         <div>
-                            <div style="font-size:13px;font-weight:700;color:var(--text);">NDA Terlampir</div>
+                            <div style="font-size:13px;font-weight:700;color:var(--text);">Dokumen Permohonan</div>
                             <div style="font-size:11.5px;color:var(--text-muted);">{{ $dataRequest->nda_filename }}</div>
                         </div>
                     </div>
@@ -64,6 +55,26 @@
                             <i class="fas fa-eye"></i> Lihat
                         </a>
                         <a href="{{ route('superadmin.requests.nda', ['dataRequest' => $dataRequest, 'mode' => 'download']) }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-download"></i> Unduh
+                        </a>
+                    </div>
+                </div>
+                @endif
+
+                @if($dataRequest->bast_path)
+                <div style="margin-top:14px; padding:14px 16px; background:var(--info-bg); border:1.5px solid var(--info-border); border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <i class="fas fa-file-pdf" style="color:#dc2626;font-size:20px;"></i>
+                        <div>
+                            <div style="font-size:13px;font-weight:700;color:var(--text);">Dokumen BAST</div>
+                            <div style="font-size:11.5px;color:var(--text-muted);">{{ $dataRequest->bast_filename }}</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-shrink:0;">
+                        <a href="{{ route('superadmin.requests.bast', $dataRequest) }}" target="_blank" class="btn btn-sm btn-outline">
+                            <i class="fas fa-eye"></i> Lihat
+                        </a>
+                        <a href="{{ route('superadmin.requests.bast', ['dataRequest' => $dataRequest, 'mode' => 'download']) }}" class="btn btn-sm btn-primary">
                             <i class="fas fa-download"></i> Unduh
                         </a>
                     </div>
@@ -134,22 +145,24 @@
                     <label class="form-label">Catatan (opsional)</label>
                     <textarea name="catatan" class="form-control" rows="3" placeholder="Catatan atau syarat khusus untuk pemohon..."></textarea>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Limit Download <span class="required">*</span></label>
-                    <input type="number" name="max_downloads" class="form-control" value="{{ old('max_downloads', $dataRequest->max_downloads ?? 3) }}" min="1" max="999" required>
-                    <div class="form-text">Jumlah maksimal unduhan untuk periode yang dipilih.</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Reset Kuota <span class="required">*</span></label>
-                    <select name="quota_period" class="form-control" required>
-                        <option value="daily" {{ old('quota_period', $dataRequest->quota_period ?? 'weekly') === 'daily' ? 'selected' : '' }}>Harian</option>
-                        <option value="weekly" {{ old('quota_period', $dataRequest->quota_period ?? 'weekly') === 'weekly' ? 'selected' : '' }}>Mingguan</option>
-                        <option value="monthly" {{ old('quota_period', $dataRequest->quota_period ?? 'weekly') === 'monthly' ? 'selected' : '' }}>Bulanan</option>
-                        <option value="lifetime" {{ old('quota_period', $dataRequest->quota_period ?? 'weekly') === 'lifetime' ? 'selected' : '' }}>Selamanya</option>
-                    </select>
-                </div>
                 <button type="submit" class="btn btn-success" style="width:100%;justify-content:center;">
-                    <i class="fas fa-circle-check"></i> Setujui Akses
+                    <i class="fas fa-circle-check"></i> Setujui Permohonan
+                </button>
+            </form>
+        </div>
+
+        <div class="action-card" style="border-color:var(--warning-border); background:var(--warning-bg);">
+            <div class="action-card-title" style="color:var(--warning);">
+                <i class="fas fa-rotate-left"></i> Kembalikan Permohonan
+            </div>
+            <form action="{{ route('superadmin.requests.return', $dataRequest) }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label class="form-label">Catatan Perbaikan <span class="required">*</span></label>
+                    <textarea name="catatan" class="form-control" rows="3" required placeholder="Jelaskan perbaikan yang harus dilakukan Admin OPD..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-warning" style="width:100%;justify-content:center;" onclick="return confirm('Kembalikan permohonan ini ke Admin OPD?')">
+                    <i class="fas fa-rotate-left"></i> Kembalikan
                 </button>
             </form>
         </div>
@@ -182,12 +195,12 @@
                     <i class="fas fa-circle-check"></i> Akses Disetujui
                 </div>
                 <div class="info-row">
-                    <div class="info-label">Disetujui oleh</div>
-                    <div class="info-value">{{ $dataRequest->reviewer->name ?? '-' }}</div>
+                    <div class="info-label">BAST disetujui oleh</div>
+                    <div class="info-value">{{ $dataRequest->bastReviewer->name ?? $dataRequest->reviewer->name ?? '-' }}</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Pada tanggal</div>
-                    <div class="info-value">{{ $dataRequest->reviewed_at?->format('d/m/Y H:i') }}</div>
+                    <div class="info-value">{{ ($dataRequest->bast_reviewed_at ?? $dataRequest->reviewed_at)?->format('d/m/Y H:i') }}</div>
                 </div>
                 <div class="info-row" style="margin-bottom:0;">
                     <div class="info-label">Sisa unduhan {{ $dataRequest->quotaWindowLabel() }}</div>
@@ -244,6 +257,53 @@
                 <button type="submit" class="btn btn-warning" style="width:100%;justify-content:center;"
                     onclick="return confirm('Yakin mencabut persetujuan akses ini?')">
                     <i class="fas fa-ban"></i> Cabut Akses
+                </button>
+            </form>
+        </div>
+        @endif
+
+        @if($dataRequest->isBastPending())
+        <div class="action-card approve" style="margin-bottom:14px;">
+            <div class="action-card-title" style="color:var(--success);">
+                <i class="fas fa-circle-check"></i> Setujui BAST
+            </div>
+            <form action="{{ route('superadmin.requests.bast.approve', $dataRequest) }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label class="form-label">Catatan (opsional)</label>
+                    <textarea name="catatan" class="form-control" rows="3" placeholder="Catatan verifikasi BAST..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Limit Download <span class="required">*</span></label>
+                    <input type="number" name="max_downloads" class="form-control" value="{{ old('max_downloads', $dataRequest->max_downloads ?? 3) }}" min="1" max="999" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reset Kuota <span class="required">*</span></label>
+                    <select name="quota_period" class="form-control" required>
+                        <option value="daily" {{ old('quota_period', $dataRequest->quota_period ?? 'weekly') === 'daily' ? 'selected' : '' }}>Harian</option>
+                        <option value="weekly" {{ old('quota_period', $dataRequest->quota_period ?? 'weekly') === 'weekly' ? 'selected' : '' }}>Mingguan</option>
+                        <option value="monthly" {{ old('quota_period', $dataRequest->quota_period ?? 'weekly') === 'monthly' ? 'selected' : '' }}>Bulanan</option>
+                        <option value="lifetime" {{ old('quota_period', $dataRequest->quota_period ?? 'weekly') === 'lifetime' ? 'selected' : '' }}>Selamanya</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success" style="width:100%;justify-content:center;">
+                    <i class="fas fa-circle-check"></i> Setujui BAST
+                </button>
+            </form>
+        </div>
+
+        <div class="action-card" style="border-color:var(--warning-border); background:var(--warning-bg);">
+            <div class="action-card-title" style="color:var(--warning);">
+                <i class="fas fa-rotate-left"></i> Kembalikan BAST
+            </div>
+            <form action="{{ route('superadmin.requests.bast.return', $dataRequest) }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label class="form-label">Catatan Perbaikan <span class="required">*</span></label>
+                    <textarea name="catatan" class="form-control" rows="3" required placeholder="Jelaskan perbaikan dokumen BAST..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-warning" style="width:100%;justify-content:center;" onclick="return confirm('Kembalikan BAST ini ke Admin OPD?')">
+                    <i class="fas fa-rotate-left"></i> Kembalikan BAST
                 </button>
             </form>
         </div>

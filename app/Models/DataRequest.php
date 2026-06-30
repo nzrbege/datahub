@@ -16,7 +16,9 @@ class DataRequest extends Model
     protected $fillable = [
         'user_id', 'data_file_id', 'alasan_permintaan', 'tujuan_penggunaan',
         'dasar_hukum', 'nda_filename', 'nda_path', 'nda_hash',
+        'bast_filename', 'bast_path', 'bast_hash',
         'status', 'reviewed_by', 'reviewed_at', 'catatan_reviewer',
+        'bast_reviewed_by', 'bast_reviewed_at', 'catatan_bast',
         'download_token', 'token_expires_at', 'download_count', 'max_downloads',
         'quota_period', 'quota_reset_at',
     ];
@@ -25,6 +27,7 @@ class DataRequest extends Model
     {
         return [
             'reviewed_at' => 'datetime',
+            'bast_reviewed_at' => 'datetime',
             'token_expires_at' => 'datetime',
             'quota_reset_at' => 'datetime',
         ];
@@ -56,17 +59,32 @@ class DataRequest extends Model
         return $this->belongsTo(User::class, 'reviewed_by');
     }
 
+    public function bastReviewer()
+    {
+        return $this->belongsTo(User::class, 'bast_reviewed_by');
+    }
+
     public function downloadLogs()
     {
         return $this->hasMany(DownloadLog::class);
     }
 
+    public function utilizationEvaluation()
+    {
+        return $this->hasOne(DataUtilizationEvaluation::class);
+    }
+
     // ─── Helpers ───────────────────────────────────────────────────────────────
 
     public function isPending(): bool    { return $this->status === 'pending'; }
-    public function isApproved(): bool   { return $this->status === 'approved'; }
+    public function isReturned(): bool   { return $this->status === 'returned'; }
+    public function isApproved(): bool   { return $this->status === 'bast_approved'; }
+    public function isRequestApproved(): bool { return $this->status === 'approved'; }
+    public function isBastPending(): bool { return $this->status === 'bast_pending'; }
+    public function isBastRejected(): bool { return $this->status === 'bast_rejected'; }
     public function isRejected(): bool   { return $this->status === 'rejected'; }
     public function isRevoked(): bool    { return $this->status === 'revoked'; }
+    public function needsBastUpload(): bool { return $this->isRequestApproved(); }
 
     public function canDownload(): bool
     {
@@ -191,7 +209,11 @@ class DataRequest extends Model
     {
         return match($this->status) {
             'pending'  => 'Menunggu Persetujuan',
-            'approved' => 'Disetujui',
+            'returned' => 'Dikembalikan',
+            'approved' => 'Menunggu Upload BAST',
+            'bast_pending' => 'BAST Menunggu Verifikasi',
+            'bast_approved' => 'Disetujui',
+            'bast_rejected' => 'BAST Ditolak',
             'rejected' => 'Ditolak',
             'revoked'  => 'Dicabut',
             default    => $this->status,
@@ -202,10 +224,26 @@ class DataRequest extends Model
     {
         return match($this->status) {
             'pending'  => 'yellow',
-            'approved' => 'green',
+            'returned' => 'yellow',
+            'approved' => 'blue',
+            'bast_pending' => 'yellow',
+            'bast_approved' => 'green',
+            'bast_rejected' => 'red',
             'rejected' => 'red',
             'revoked'  => 'gray',
             default    => 'gray',
         };
+    }
+
+    public function getReasonAndPurposeAttribute(): string
+    {
+        $reason = trim((string) $this->alasan_permintaan);
+        $purpose = trim((string) $this->tujuan_penggunaan);
+
+        if ($purpose === '' || $purpose === $reason) {
+            return $reason;
+        }
+
+        return $reason . "\n\n" . $purpose;
     }
 }

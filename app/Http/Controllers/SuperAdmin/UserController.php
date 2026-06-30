@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Opd;
 use App\Models\User;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
@@ -22,7 +23,9 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('superadmin.users.create');
+        return view('superadmin.users.create', [
+            'opdOptions' => $this->opdOptions(),
+        ]);
     }
 
     public function store(Request $request)
@@ -34,11 +37,12 @@ class UserController extends Controller
             'password'  => ['required', 'string', 'min:12', 'confirmed',
                             'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{12,}$/'],
             'phone'     => ['nullable', 'string', 'max:20'],
-            'instansi'  => ['required', 'string', 'max:255'],
+            'instansi'  => ['required', 'string', 'max:255', Rule::in($this->opdOptions()->all())],
             'jabatan'   => ['required', 'string', 'max:255'],
             'role'      => ['required', 'in:admin,super_admin'],
         ], [
             'password.regex' => 'Kata sandi harus minimal 12 karakter, mengandung huruf besar, kecil, angka, dan karakter khusus.',
+            'instansi.in' => 'Pilih Instansi/OPD dari daftar yang tersedia.',
         ]);
 
         $user = User::create([
@@ -126,5 +130,13 @@ class UserController extends Controller
         $this->audit->log('password_reset', $user, ['reset_by' => auth()->id()]);
 
         return back()->with('success', 'Kata sandi berhasil direset.');
+    }
+
+    private function opdOptions()
+    {
+        return Opd::query()
+            ->where('is_active', true)
+            ->orderBy('nama')
+            ->pluck('nama');
     }
 }

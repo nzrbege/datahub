@@ -17,11 +17,11 @@
                     <th>#</th>
                     <th>Dataset</th>
                     <th>Kategori</th>
-                    <th>NDA</th>
+                    <th>Dokumen</th>
                     <th>Tanggal Diajukan</th>
                     <th>Status</th>
                     <th>Direview</th>
-                    <th>Sisa Unduhan</th>
+                    <th>Tahap</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -74,7 +74,7 @@
                                 <i class="fas fa-download"></i>
                             </a>
                             @endif
-                            @if($req->isRejected())
+                            @if($req->isReturned())
                             <a href="{{ route('admin.requests.edit', $req) }}" class="btn btn-xs btn-primary" title="Revisi">
                                 <i class="fas fa-file-pen"></i>
                             </a>

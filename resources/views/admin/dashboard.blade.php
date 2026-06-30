@@ -14,12 +14,12 @@
     $recentRequests->each->ensureDownloadToken();
 
     $activeRequests = $user->dataRequests()
-        ->whereIn('status', ['pending', 'approved'])
+        ->whereIn('status', ['pending', 'returned', 'approved', 'bast_pending', 'bast_approved'])
         ->get()->keyBy('data_file_id');
 
     $totalRequests   = $user->dataRequests()->count();
     $pendingRequests = $user->dataRequests()->where('status', 'pending')->count();
-    $approvedRequests= $user->dataRequests()->where('status', 'approved')->count();
+    $approvedRequests= $user->dataRequests()->where('status', 'bast_approved')->count();
     $downloads       = \App\Models\DownloadLog::where('user_id', $user->id)->where('status', 'success')->count();
 @endphp
 
@@ -39,7 +39,7 @@
         <div class="stat-num">{{ $pendingRequests }}</div>
         <div class="stat-label">Menunggu Persetujuan</div>
     </a>
-    <a href="{{ route('admin.requests.index', ['status' => 'approved']) }}" class="stat-card green">
+    <a href="{{ route('admin.requests.index', ['status' => 'bast_approved']) }}" class="stat-card green">
         <div class="stat-top"><div class="stat-icon green"><i class="fas fa-circle-check"></i></div></div>
         <div class="stat-num">{{ $approvedRequests }}</div>
         <div class="stat-label">Akses Disetujui</div>
@@ -80,7 +80,7 @@
                                 <span class="dataset-meta-chip"><i class="fas fa-shield-halved" style="font-size:10px; color:var(--success)"></i> Storage Privat</span>
                             </div>
                             <div class="dataset-desc">
-                                {{ \Illuminate\Support\Str::limit($file->deskripsi ?: 'Dataset tersedia untuk diajukan melalui permintaan resmi dengan melampirkan NDA.', 110) }}
+                                {{ \Illuminate\Support\Str::limit($file->deskripsi ?: 'Dataset tersedia untuk diajukan melalui permintaan resmi dengan melampirkan dokumen permohonan.', 110) }}
                             </div>
                             <div class="dataset-card__actions">
                                 @if($requestForFile)
@@ -96,7 +96,7 @@
                                     @endif
                                 @else
                                     <span class="badge badge-active">Metadata Tersedia</span>
-                                    <a href="{{ route('admin.requests.create') }}" class="btn btn-xs btn-primary">
+                                    <a href="{{ route('admin.requests.create', ['data_file_id' => $file->id]) }}" class="btn btn-xs btn-primary">
                                         <i class="fas fa-file-signature"></i> Minta Akses
                                     </a>
                                 @endif
@@ -108,7 +108,7 @@
                 <div class="empty-state">
                     <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
                     <h3>Belum ada dataset yang diberikan akses</h3>
-                    <p>Super Admin perlu mengizinkan akses dataset untuk instansi Anda terlebih dahulu sebelum dapat mengajukan permintaan dan melampirkan NDA.</p>
+                    <p>Super Admin perlu mengizinkan akses dataset untuk instansi Anda terlebih dahulu sebelum dapat mengajukan permintaan dan melampirkan dokumen permohonan.</p>
                     <div style="margin-top:20px;">
                         <a href="{{ route('admin.requests.create') }}" class="btn btn-primary">
                             <i class="fas fa-paper-plane"></i> Cek Form Permintaan
@@ -171,22 +171,22 @@
                     <div class="flow-step">
                         <div class="flow-num">2</div>
                         <div class="flow-text">
-                            <strong>Ajukan &amp; Lampirkan NDA</strong>
-                            <span>Isi formulir permintaan resmi dan unggah dokumen NDA</span>
+                            <strong>Ajukan Permohonan</strong>
+                            <span>Isi formulir permintaan resmi dan unggah dokumen permohonan PDF</span>
                         </div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-num">3</div>
                         <div class="flow-text">
-                            <strong>Review &amp; Persetujuan</strong>
-                            <span>Super Admin meninjau dan memutuskan permintaan Anda</span>
+                            <strong>Review Super Admin</strong>
+                            <span>Super Admin menyetujui, mengembalikan, atau menolak permohonan</span>
                         </div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-num">4</div>
                         <div class="flow-text">
-                            <strong>Unduh dengan Verifikasi</strong>
-                            <span>Selesaikan verifikasi captcha untuk mulai mengunduh</span>
+                            <strong>Upload &amp; Verifikasi BAST</strong>
+                            <span>Upload BAST untuk diverifikasi Super Admin sebelum data dapat diunduh</span>
                         </div>
                     </div>
                 </div>

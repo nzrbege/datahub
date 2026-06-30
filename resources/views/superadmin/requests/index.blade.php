@@ -9,7 +9,10 @@
             <select name="status" class="form-control" style="width:auto;font-size:12.5px;padding:6px 10px;" onchange="this.form.submit()">
                 <option value="">Semua Status</option>
                 <option value="pending"  {{ request('status')=='pending'  ? 'selected':'' }}>Menunggu</option>
+                <option value="returned" {{ request('status')=='returned' ? 'selected':'' }}>Dikembalikan</option>
                 <option value="approved" {{ request('status')=='approved' ? 'selected':'' }}>Disetujui</option>
+                <option value="bast_pending" {{ request('status')=='bast_pending' ? 'selected':'' }}>BAST Menunggu</option>
+                <option value="bast_approved" {{ request('status')=='bast_approved' ? 'selected':'' }}>Akses Disetujui</option>
                 <option value="rejected" {{ request('status')=='rejected' ? 'selected':'' }}>Ditolak</option>
                 <option value="revoked"  {{ request('status')=='revoked'  ? 'selected':'' }}>Dicabut</option>
             </select>
@@ -23,7 +26,7 @@
                     <th>#</th>
                     <th>Pemohon &amp; Instansi</th>
                     <th>Dataset Diminta</th>
-                    <th>NDA</th>
+                    <th>Dokumen</th>
                     <th>Tanggal Diajukan</th>
                     <th>Status</th>
                     <th>Unduhan</th>
@@ -50,10 +53,10 @@
                     <td style="text-align:center;">
                         @if($req->nda_path)
                             <div style="display:flex; gap:5px; justify-content:center;">
-                                <a href="{{ route('superadmin.requests.nda', $req) }}" target="_blank" class="btn btn-xs btn-outline" title="Lihat NDA">
+                                <a href="{{ route('superadmin.requests.nda', $req) }}" target="_blank" class="btn btn-xs btn-outline" title="Lihat Dokumen Permohonan">
                                     <i class="fas fa-file-pdf" style="color:#dc2626;"></i>
                                 </a>
-                                <a href="{{ route('superadmin.requests.nda', ['dataRequest' => $req, 'mode' => 'download']) }}" class="btn btn-xs btn-ghost" title="Unduh NDA">
+                                <a href="{{ route('superadmin.requests.nda', ['dataRequest' => $req, 'mode' => 'download']) }}" class="btn btn-xs btn-ghost" title="Unduh Dokumen Permohonan">
                                     <i class="fas fa-download"></i>
                                 </a>
                             </div>

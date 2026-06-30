@@ -27,15 +27,11 @@
                     <div class="info-value">{{ $dataRequest->dataFile->kategori_label ?? '' }} · {{ $dataRequest->dataFile->tahun_data ?? '' }}</div>
                 </div>
                 <div class="info-row">
-                    <div class="info-label">Dasar Hukum</div>
-                    <div class="info-value">{{ $dataRequest->dasar_hukum }}</div>
-                </div>
-                <div class="info-row">
                     <div class="info-label">Tanggal Pengajuan</div>
                     <div class="info-value">{{ $dataRequest->created_at->format('d F Y, H:i') }}</div>
                 </div>
                 <div class="info-row">
-                    <div class="info-label">NDA Terlampir</div>
+                    <div class="info-label">Dokumen Permohonan</div>
                     <div class="info-value">
                         <i class="fas fa-file-pdf" style="color:#dc2626;"></i> {{ $dataRequest->nda_filename }}
                     </div>
@@ -43,12 +39,8 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Alasan Permintaan</label>
-                <div class="text-block">{{ $dataRequest->alasan_permintaan }}</div>
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">Tujuan Penggunaan</label>
-                <div class="text-block">{{ $dataRequest->tujuan_penggunaan }}</div>
+                <label class="form-label">Alasan dan Tujuan Penggunaan</label>
+                <div class="text-block">{{ $dataRequest->reason_and_purpose }}</div>
             </div>
 
             @if($dataRequest->catatan_reviewer)
@@ -63,7 +55,49 @@
     </div>
 
     <!-- Status Action -->
-    @if($dataRequest->isApproved())
+    @if($dataRequest->needsBastUpload())
+        <div class="card" style="border:1.5px solid var(--info-border); background:var(--info-bg);">
+            <div class="card-header">
+                <span class="card-title"><i class="fas fa-file-arrow-up"></i> Upload Dokumen BAST</span>
+            </div>
+            <div class="card-body">
+                @if($dataRequest->catatan_bast)
+                    <div class="alert alert-warning">
+                        <i class="fas fa-comment-dots"></i>
+                        <div><strong>Catatan perbaikan BAST:</strong><br>{{ $dataRequest->catatan_bast }}</div>
+                    </div>
+                @endif
+                <form action="{{ route('admin.requests.bast.upload', $dataRequest) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="form-group">
+                        <label class="form-label">Dokumen BAST <span class="required">*</span></label>
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px;">
+                            <div class="form-text" style="margin-top:0;">Gunakan template BAST yang disediakan Super Admin.</div>
+                            <a href="{{ route('admin.templates.download', ['type' => \App\Models\NdaTemplate::TYPE_BAST]) }}" class="btn btn-xs btn-outline">
+                                <i class="fas fa-download"></i> Template BAST
+                            </a>
+                        </div>
+                        <input type="file" name="bast_file" class="form-control" accept=".pdf" required>
+                        <div class="form-text">Unggah dokumen BAST dalam format PDF, maksimal 5MB.</div>
+                        @error('bast_file')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Kirim BAST
+                    </button>
+                </form>
+            </div>
+        </div>
+    @elseif($dataRequest->isBastPending())
+    <div class="alert alert-info">
+        <i class="fas fa-hourglass-half"></i>
+        <div>Dokumen BAST sedang diverifikasi oleh Super Admin.</div>
+    </div>
+    @elseif($dataRequest->isBastRejected())
+    <div class="alert alert-danger">
+        <i class="fas fa-circle-xmark"></i>
+        <div>Dokumen BAST ditolak. Akses download tidak dibuka.@if($dataRequest->catatan_bast)<br><strong>Catatan:</strong> {{ $dataRequest->catatan_bast }}@endif</div>
+    </div>
+    @elseif($dataRequest->isApproved())
         @if($dataRequest->canDownload())
         <div class="card" style="border:1.5px solid var(--success-border); background:var(--success-bg);">
             <div class="card-body" style="text-align:center; padding:28px;">
@@ -91,15 +125,20 @@
         <i class="fas fa-hourglass-half"></i>
         <div>Permintaan Anda sedang ditinjau oleh Super Admin. Anda akan diberitahu setelah ada keputusan, biasanya 1-3 hari kerja.</div>
     </div>
+    @elseif($dataRequest->isReturned())
+    <div class="alert alert-warning">
+        <i class="fas fa-file-pen"></i>
+        <div>Permohonan dikembalikan oleh Super Admin. Periksa catatan reviewer, lalu kirim ulang dokumen permohonan.</div>
+    </div>
+    <div style="margin-top:12px;">
+        <a href="{{ route('admin.requests.edit', $dataRequest) }}" class="btn btn-primary">
+            <i class="fas fa-file-pen"></i> Revisi Permohonan
+        </a>
+    </div>
     @elseif($dataRequest->isRejected())
     <div class="alert alert-danger">
         <i class="fas fa-circle-xmark"></i>
         <div>Permintaan ditolak. Periksa catatan reviewer di atas, lalu kirim revisi jika dokumen atau penjelasan perlu diperbaiki.</div>
-    </div>
-    <div style="margin-top:12px;">
-        <a href="{{ route('admin.requests.edit', $dataRequest) }}" class="btn btn-primary">
-            <i class="fas fa-file-pen"></i> Revisi Permintaan
-        </a>
     </div>
     @endif
 

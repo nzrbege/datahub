@@ -48,8 +48,24 @@ class AuditService
         ?string $tujuan = null
     ): void {
         try {
+            $userId = auth()->id();
+
+            if (!$userId) {
+                Log::channel('audit')->info("PDP_AUDIT: {$action}", [
+                    'user_id'  => null,
+                    'resource' => $resource ? class_basename($resource) . '#' . $resource->getKey() : null,
+                    'ip'       => request()->ip(),
+                    'context'  => array_merge($context, [
+                        'url'    => request()->fullUrl(),
+                        'method' => request()->method(),
+                    ]),
+                ]);
+
+                return;
+            }
+
             $data = [
-                'user_id'       => auth()->id(),
+                'user_id'       => $userId,
                 'action'        => $action,
                 'resource_type' => $resource ? class_basename($resource) : null,
                 'resource_id'   => $resource?->getKey(),
@@ -68,7 +84,7 @@ class AuditService
 
             // Juga log ke Laravel log untuk backup audit trail
             Log::channel('audit')->info("PDP_AUDIT: {$action}", [
-                'user_id'  => auth()->id(),
+                'user_id'  => $userId,
                 'resource' => $resource ? class_basename($resource) . '#' . $resource->getKey() : null,
                 'ip'       => request()->ip(),
             ]);

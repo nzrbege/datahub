@@ -137,7 +137,7 @@
                 </div>
                 <div class="quick-item">
                     <span style="font-size:13px; color:var(--text-muted);">Disetujui</span>
-                    <strong style="color:var(--success);">{{ $dataFile->dataRequests->where('status','approved')->count() }}</strong>
+                    <strong style="color:var(--success);">{{ $dataFile->dataRequests->where('status','bast_approved')->count() }}</strong>
                 </div>
                 <div class="quick-item">
                     <span style="font-size:13px; color:var(--text-muted);">Pending</span>
