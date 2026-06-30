@@ -63,7 +63,7 @@
                         ondrop="handleDrop(event)">
                         <i class="fas fa-cloud-arrow-up" style="font-size:28px; color:var(--brand-400); display:block; margin-bottom:10px;"></i>
                         <div style="font-size:13.5px; font-weight:700; color:var(--text-2);">Klik atau drag &amp; drop file di sini</div>
-                        <div style="font-size:11.5px; color:var(--text-muted); margin-top:5px;">Format: XLSX, CSV, ZIP &bull; Maks 50MB &bull; Pastikan file sudah diberi token/password</div>
+                        <div style="font-size:11.5px; color:var(--text-muted); margin-top:5px;">Format: XLSX, CSV, ZIP &bull; Maks 300MB &bull; Pastikan file sudah diberi token/password</div>
                     </div>
                     <input type="file" name="file" id="fileInput" accept=".xlsx,.csv,.zip" style="display:none;" required onchange="showFileInfo(this)">
                     <div id="fileInfo" style="display:none; margin-top:10px; padding:10px 13px; background:var(--success-bg); border:1px solid var(--success-border); border-radius:var(--radius-sm); font-size:12.5px; color:#065f46; display:flex; align-items:center; gap:8px;">

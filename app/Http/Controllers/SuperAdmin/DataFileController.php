@@ -43,7 +43,7 @@ class DataFileController extends Controller
         $request->validate([
             'judul'       => ['required', 'string', 'max:255'],
             'deskripsi'   => ['nullable', 'string', 'max:2000'],
-            'file'        => ['required', 'file', 'mimes:xlsx,csv,zip', 'max:280000'],
+            'file'        => ['required', 'file', 'mimes:xlsx,csv,zip', 'max:307200'],
             'kategori'    => ['required', Rule::in(['DATASET_KELUARGA', 'DATASET_ANGGOTA_KELUARGA'])],
             'tahun_data'  => ['nullable', 'regex:/^(20[0-9]{2}|20[0-9]{2}-(0[1-9]|1[0-2]))$/'],
             'admin_ids'   => ['array'],
